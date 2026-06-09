@@ -1,0 +1,9 @@
+deployments:
+  environments:
+    dev: {}
+    stg: {}
+    prd: {}
+  sequence:
+    - environment: dev
+    - environment: stg
+    - environment: prd
