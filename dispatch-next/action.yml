@@ -78,7 +78,7 @@ runs:
         with:
           token: ${{ inputs.GITHUB_TOKEN || github.token }}
           repository: ${{ github.repository }}
-          event-type: ${{ steps.prepare-dispatch.outputs.event-type }}
+          event-type: ${{ steps.prepare-dispatch.outputs.dispatch-event-type }}
           client-payload: |-
             {
               "component": "${{ inputs.COMPONENT }}",
