@@ -1,0 +1,40 @@
+name: action-parse-deployments
+description: Install one or more tools using Homebrew
+
+inputs:
+  COMPONENT:
+    description: The name of the component, for which deployments are being parsed
+    required: true
+  PREVIOUS_ENVIRONMENT:
+    description: The previous environment, if this has been triggered by a previous deployment step
+    required: false
+
+outputs:
+  ALL_ENVIRONMENTS:
+    value: ${{ steps.run.outputs.ALL_ENVIRONMENTS }}
+    description: A JSON array of all environments
+  DONE:
+    value: ${{ steps.run.outputs.DONE }}
+    description: True if there is no next environment in the sequence
+  NEXT_ENVIRONMENT:
+    value: ${{ steps.run.outputs.NEXT_ENVIRONMENT }}
+    description: The next environment in the sequence, if any
+
+runs:
+  using: composite
+  steps:
+    -
+      id: component-info
+      uses: slingshot-pipelines/action-component-info@v1
+      with:
+        component: ${{ inputs.COMPONENT }}
+    -
+      id: run
+      shell: bash
+      env:
+        COMPONENT_INFO: ${{ steps.component-info.outputs.info }}
+        PREVIOUS_ENVIRONMENT: ${{ inputs.PREVIOUS_ENVIRONMENT }}
+      run: |
+        # Parse the deployment sequence
+        
+        ${{ github.action_path }}/scripts/parse-deployments.sh
