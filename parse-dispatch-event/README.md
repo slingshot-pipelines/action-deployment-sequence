@@ -6,10 +6,9 @@ Parse the repository dispatch event
 
 <!-- AUTO-DOC-INPUT:START - Do not remove or modify this section -->
 
-|        INPUT         |  TYPE  | REQUIRED | DEFAULT |                                    DESCRIPTION                                     |
-|----------------------|--------|----------|---------|------------------------------------------------------------------------------------|
-|      COMPONENT       | string |   true   |         |         The name of the component, for which deployments are being parsed          |
-| PREVIOUS_ENVIRONMENT | string |  false   |         | The previous environment, if this has been triggered by a previous deployment step |
+|     INPUT      |  TYPE  | REQUIRED | DEFAULT |                        DESCRIPTION                        |
+|----------------|--------|----------|---------|-----------------------------------------------------------|
+| CLIENT_PAYLOAD | string |   true   |         | The client_payload field of the repository_dispatch event |
 
 <!-- AUTO-DOC-INPUT:END -->
 
@@ -17,10 +16,11 @@ Parse the repository dispatch event
 
 <!-- AUTO-DOC-OUTPUT:START - Do not remove or modify this section -->
 
-|      OUTPUT      |  TYPE  |                     DESCRIPTION                      |
-|------------------|--------|------------------------------------------------------|
-| ALL_ENVIRONMENTS | string |           A JSON array of all environments           |
-|       DONE       | string | True if there is no next environment in the sequence |
-| NEXT_ENVIRONMENT | string |     The next environment in the sequence, if any     |
+|     OUTPUT     |  TYPE  |         DESCRIPTION          |
+|----------------|--------|------------------------------|
+|   COMPONENT    | string |  The name of the component   |
+| COMPONENT_TYPE | string |  The type of the component   |
+|  ENVIRONMENT   | string | The environment to deploy to |
+|      TAG       | string |      The tag to deploy       |
 
 <!-- AUTO-DOC-OUTPUT:END -->
