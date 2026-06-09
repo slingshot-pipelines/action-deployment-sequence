@@ -1,5 +1,5 @@
-name: action-parse-deployments
-description: Install one or more tools using Homebrew
+name: parse-sequence
+description: Parse a deployment sequence configuration
 
 inputs:
   COMPONENT:
@@ -37,4 +37,4 @@ runs:
       run: |
         # Parse the deployment sequence
         
-        ${{ github.action_path }}/scripts/parse-deployments.sh
+        "${{ github.action_path }}/action.sh"

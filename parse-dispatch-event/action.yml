@@ -1,0 +1,61 @@
+name: parse-dispatch-event
+description: Parse the repository dispatch event
+
+inputs:
+  CLIENT_PAYLOAD:
+    description: The client_payload field of the repository_dispatch event
+    required: true
+
+outputs:
+  COMPONENT:
+    description: The name of the component
+    value: ${{ steps.parse-client-payload.outputs.component }}
+  COMPONENT_TYPE:
+    description: The type of the component
+    value: ${{ steps.parse-client-payload.outputs.component-type }}
+  ENVIRONMENT:
+    description: The environment to deploy to
+    value: ${{ steps.parse-client-payload.outputs.environment }}
+  TAG:
+    description: The tag to deploy
+    value: ${{ steps.parse-client-payload.outputs.tag }}
+
+runs:
+  using: composite
+  steps:
+    -
+      name: Validate inputs
+      shell: bash
+      env:
+        CLIENT_PAYLOAD: ${{ inputs.CLIENT_PAYLOAD }}
+      run: |
+        # Validate inputs
+        
+        FAILED=false
+
+        if [[ -z "$CLIENT_PAYLOAD" ]]; then
+          >&2 echo "Missing input CLIENT_PAYLOAD"
+          FAILED=true
+        fi
+
+        if [[ "$FAILED" == "true" ]]; then
+          exit 1
+        fi
+    -
+      name: Parse payload
+      shell: bash
+      id: parse-client-payload
+      env:
+        CLIENT_PAYLOAD: ${{ inputs.CLIENT_PAYLOAD }}
+      run: |
+        COMPONENT=$(echo "$CLIENT_PAYLOAD" | jq -rc '.component')
+        echo "component=$COMPONENT" | tee -a "$GITHUB_OUTPUT"
+
+        COMPONENT_TYPE=$(echo "$CLIENT_PAYLOAD" | jq -rc '.component-type')
+        echo "component-type=$COMPONENT_TYPE" | tee -a "$GITHUB_OUTPUT"
+
+        ENVIRONMENT=$(echo "$CLIENT_PAYLOAD" | jq -rc '.environment')
+        echo "environment=$ENVIRONMENT" | tee -a "$GITHUB_OUTPUT"
+
+        TAG=$(echo "$CLIENT_PAYLOAD" | jq -rc '.tag')
+        echo "tag=$TAG" | tee -a "$GITHUB_OUTPUT"
