@@ -51,7 +51,7 @@ runs:
         COMPONENT=$(echo "$CLIENT_PAYLOAD" | jq -rc '.component')
         echo "component=$COMPONENT" | tee -a "$GITHUB_OUTPUT"
 
-        COMPONENT_TYPE=$(echo "$CLIENT_PAYLOAD" | jq -rc '.component-type')
+        COMPONENT_TYPE=$(echo "$CLIENT_PAYLOAD" | jq -rc '.["component-type"]')
         echo "component-type=$COMPONENT_TYPE" | tee -a "$GITHUB_OUTPUT"
 
         ENVIRONMENT=$(echo "$CLIENT_PAYLOAD" | jq -rc '.environment')
