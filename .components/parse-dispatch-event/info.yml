@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/github-action.schema.json
+
+component: parse-dispatch-event
+type: github-action
+
+path: parse-dispatch-event
+source-language: composite

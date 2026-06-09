@@ -1,6 +1,6 @@
-# action-parse-deployments
+# parse-dispatch-event
 
-GitHub action for parsing component deployment configurations
+Parse the repository dispatch event
 
 ## Inputs
 
