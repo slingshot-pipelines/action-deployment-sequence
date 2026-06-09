@@ -1,0 +1,88 @@
+name: dispatch-next
+description: Dispatch the next deployment in the sequence
+
+inputs:
+  COMPONENT:
+    description: The name of the component to dispatch deployment for
+    required: true
+  TAG:
+    description: The git tag to deploy with
+    required: true
+  NEXT_ENVIRONMENT:
+    description: The environment to dispatch deployment for
+    required: true
+  GITHUB_TOKEN:
+    description: Optional Github token to use for dispatch
+    required: false
+
+runs:
+  using: composite
+  steps:
+    -
+      name: Validate inputs
+      shell: bash
+      env:
+        COMPONENT: ${{ inputs.COMPONENT }}
+        TAG: ${{ inputs.TAG }}
+        NEXT_ENVIRONMENT: ${{ inputs.NEXT_ENVIRONMENT }}
+      run: |
+        # Validate inputs
+        
+        FAILED=false
+
+        if [[ -z "$COMPONENT" ]]; then
+          >&2 echo "Missing input COMPONENT"
+          FAILED=true
+        fi
+
+        if [[ -z "$TAG" ]]; then
+          >&2 echo "Missing input TAG"
+          FAILED=true
+        fi
+
+        if [[ -z "$NEXT_ENVIRONMENT" ]]; then
+          >&2 echo "Missing input NEXT_ENVIRONMENT"
+          FAILED=true
+        fi
+
+        if [[ "$FAILED" == "true" ]]; then
+          exit 1
+        fi
+    -
+      id: fetch-component-info
+      uses: slingshot-pipelines/action-component-info@v1
+      with:
+        component: ${{ inputs.COMPONENT }}
+    -
+      id: prepare-dispatch
+      shell: bash
+      env:
+        COMPONENT_INFO: ${{ steps.fetch-component-info.outputs.info }}
+        NEXT_ENVIRONMENT: ${{ inputs.NEXT_ENVIRONMENT }}
+      run: |
+        # Parse component info, to form dispatch payload
+
+        COMPONENT_TYPE=$(echo "$COMPONENT_INFO" | jq -rc '.type')
+        if [[ -z "$COMPONENT_TYPE" ]]; then
+          >&2 echo "Error determining component type"
+          exit 1
+        fi
+
+        DISPATCH_EVENT_TYPE="deploy-${COMPONENT_TYPE}-${NEXT_ENVIRONMENT}"
+
+        echo "component-type=$COMPONENT_TYPE" | tee -a "$GITHUB_OUTPUT"
+        echo "dispatch-event-type=$DISPATCH_EVENT_TYPE" | tee -a "$GITHUB_OUTPUT"
+    -
+        name: Trigger deployment
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ inputs.GITHUB_TOKEN || github.token }}
+          repository: ${{ github.repository }}
+          event-type: ${{ steps.event-type.outputs.event-type }}
+          client-payload: |-
+            {
+              "component": "${{ inputs.COMPONENT }}",
+              "component-type": "${{ steps.prepare-dispatch.outputs.COMPONENT_TYPE }}",
+              "environment": "${{ inputs.NEXT_ENVIRONMENT }}",
+              "tag": "${{ inputs.TAG }}"
+            }

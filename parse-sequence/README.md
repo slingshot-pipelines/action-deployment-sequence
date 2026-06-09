@@ -1,4 +1,4 @@
-# action-parse-deployments
+# parse-sequence
 
 GitHub action for parsing component deployment configurations
 
