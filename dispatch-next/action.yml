@@ -78,11 +78,11 @@ runs:
         with:
           token: ${{ inputs.GITHUB_TOKEN || github.token }}
           repository: ${{ github.repository }}
-          event-type: ${{ steps.event-type.outputs.event-type }}
+          event-type: ${{ steps.prepare-dispatch.outputs.event-type }}
           client-payload: |-
             {
               "component": "${{ inputs.COMPONENT }}",
-              "component-type": "${{ steps.prepare-dispatch.outputs.COMPONENT_TYPE }}",
+              "component-type": "${{ steps.prepare-dispatch.outputs.component-type }}",
               "environment": "${{ inputs.NEXT_ENVIRONMENT }}",
               "tag": "${{ inputs.TAG }}"
             }
