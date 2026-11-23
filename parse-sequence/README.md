@@ -17,10 +17,11 @@ GitHub action for parsing component deployment configurations
 
 <!-- AUTO-DOC-OUTPUT:START - Do not remove or modify this section -->
 
-|      OUTPUT      |  TYPE  |                     DESCRIPTION                      |
-|------------------|--------|------------------------------------------------------|
-| ALL_ENVIRONMENTS | string |           A JSON array of all environments           |
-|       DONE       | string | True if there is no next environment in the sequence |
-| NEXT_ENVIRONMENT | string |     The next environment in the sequence, if any     |
+|      OUTPUT      |  TYPE  |                                        DESCRIPTION                                         |
+|------------------|--------|--------------------------------------------------------------------------------------------|
+| ALL_ENVIRONMENTS | string |                              A JSON array of all environments                              |
+|       DONE       | string |                    True if there is no next environment in the sequence                    |
+| NEXT_ENVIRONMENT | string |                        The next environment in the sequence, if any                        |
+|   NEXT_MANUAL    | string | True if the next environment is flagged manual, and should not be dispatched automatically |
 
 <!-- AUTO-DOC-OUTPUT:END -->

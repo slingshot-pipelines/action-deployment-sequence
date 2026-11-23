@@ -70,10 +70,18 @@ runs:
 
         DISPATCH_EVENT_TYPE="deploy-${COMPONENT_TYPE}-${NEXT_ENVIRONMENT}"
 
+        # Do not dispatch automatically if the next step is flagged manual
+        MANUAL=$(echo "$COMPONENT_INFO" | jq -rc --arg env "$NEXT_ENVIRONMENT" '[.deployments.sequence[]? | select(.environment == $env)] | first | .manual == true')
+        if [[ "$MANUAL" == "true" ]]; then
+          echo "Environment '$NEXT_ENVIRONMENT' is manual, skipping dispatch"
+        fi
+
+        echo "manual=$MANUAL" | tee -a "$GITHUB_OUTPUT"
         echo "component-type=$COMPONENT_TYPE" | tee -a "$GITHUB_OUTPUT"
         echo "dispatch-event-type=$DISPATCH_EVENT_TYPE" | tee -a "$GITHUB_OUTPUT"
     -
         name: Trigger deployment
+        if: steps.prepare-dispatch.outputs.manual != 'true'
         uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ inputs.GITHUB_TOKEN || github.token }}
