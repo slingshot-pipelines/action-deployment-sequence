@@ -20,6 +20,10 @@ outputs:
     value: ${{ steps.run.outputs.NEXT_ENVIRONMENT }}
     description: The next environment in the sequence, if any
 
+  NEXT_MANUAL:
+    value: ${{ steps.run.outputs.NEXT_MANUAL }}
+    description: True if the next environment is flagged manual, and should not be dispatched automatically
+
 runs:
   using: composite
   steps:

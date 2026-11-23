@@ -30,11 +30,19 @@ if [[ "$SEQUENCE_LENGTH" == "0" ]]; then
     exit 0
 fi
 
+# Output whether the given step is flagged as manual (.deployments.sequence[].manual == true)
+output_next_manual() {
+    local MANUAL
+    MANUAL=$(echo "$COMPONENT_INFO" | jq -rc --arg env "$1" '[.deployments.sequence[] | select(.environment == $env)] | first | .manual == true')
+    echo "NEXT_MANUAL=$MANUAL" | tee -a "$GITHUB_OUTPUT"
+}
+
 # Determine the next step, and if we are done or not
 if [[ -z "${PREVIOUS_ENVIRONMENT-}" ]]; then
     echo "No previous environment detected, identifying first step in the sequence"
     FIRST_STEP=$(echo "$ENVIRONMENTS_SEQUENCE" | jq -rc '.[0]')
     echo "NEXT_ENVIRONMENT=$FIRST_STEP" | tee -a "$GITHUB_OUTPUT"
+    output_next_manual "$FIRST_STEP"
     echo "DONE=false" | tee -a "$GITHUB_OUTPUT"
 else
     echo "Previous environment was '$PREVIOUS_ENVIRONMENT', searching for a next step in the sequence"
@@ -46,6 +54,7 @@ else
             # If we just found the previous step in the last iteration, this iteration is the next step
             NEXT_STEP_FOUND=true
             echo "NEXT_ENVIRONMENT=$STEP" | tee -a "$GITHUB_OUTPUT"
+            output_next_manual "$STEP"
             echo "DONE=false" | tee -a "$GITHUB_OUTPUT"
             break
         elif [[ "$STEP" == "$PREVIOUS_ENVIRONMENT" ]]; then
